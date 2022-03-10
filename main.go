@@ -5,18 +5,33 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/mikkelstb/feedfetcher/config"
 	"github.com/mikkelstb/feedfetcher/feed"
 )
 
 var config_file string
+var loop bool
 
 func init() {
 	flag.StringVar(&config_file, "config", "./config.json", "filepath for config file")
+	flag.BoolVar(&loop, "loop", false, "set if program should run once per 2 hours")
 }
 
 func main() {
+
+	for {
+		fmt.Printf("Running feedfetcher @ %s", time.Now().Format("2006-01-02 15:04"))
+		run()
+		if !loop {
+			break
+		}
+		time.Sleep(2 * time.Hour)
+	}
+}
+
+func run() {
 
 	// Read configfile
 	cfg, err := config.Read(config_file)
