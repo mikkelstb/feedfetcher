@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"strings"
 
@@ -9,10 +10,16 @@ import (
 	"github.com/mikkelstb/feed_fetcher/feed"
 )
 
+var config_file string
+
+func init() {
+	flag.StringVar(&config_file, "config", "./config.json", "filepath for config file")
+}
+
 func main() {
 
 	// Read configfile
-	cfg, err := config.Read("./config.json")
+	cfg, err := config.Read(config_file)
 	if err != nil {
 		panic(err)
 	}
@@ -24,7 +31,7 @@ func main() {
 	}
 
 	// Load database
-	db, err := setupDB("/home/mikkel/database/headline_tracker.db")
+	db, err := setupDB(cfg.DB_file_path)
 	if err != nil {
 		panic(err)
 	}
