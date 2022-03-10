@@ -5,7 +5,7 @@ import (
 
 	"time"
 
-	"github.com/mikkelstb/feed_fetcher/config"
+	"github.com/mikkelstb/feedfetcher/config"
 )
 
 type Source struct {

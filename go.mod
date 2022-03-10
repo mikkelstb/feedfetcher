@@ -1,4 +1,4 @@
-module github.com/mikkelstb/feed_fetcher
+module github.com/mikkelstb/feedfetcher
 
 go 1.17
 

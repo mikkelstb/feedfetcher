@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mikkelstb/feed_fetcher/feed"
+	"github.com/mikkelstb/feedfetcher/feed"
 )
 
 func init() {

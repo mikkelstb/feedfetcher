@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/mikkelstb/feed_fetcher/feed"
+	"github.com/mikkelstb/feedfetcher/feed"
 )
 
 type SQLiteRepository struct {

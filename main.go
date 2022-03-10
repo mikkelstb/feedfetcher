@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mikkelstb/feed_fetcher/config"
-	"github.com/mikkelstb/feed_fetcher/feed"
+	"github.com/mikkelstb/feedfetcher/config"
+	"github.com/mikkelstb/feedfetcher/feed"
 )
 
 var config_file string
