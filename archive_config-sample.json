@@ -1,0 +1,20 @@
+{
+    "archive_path": "./archive",
+    "db_file_path":"./feed_fetcher.db",
+    "sources": [
+        {
+            "name": "no_nrk_innenriks",
+            "screen_name": "NRK Innenriks",
+            "active": true,
+            "id": 3,
+            "country": "no",
+            "language": "nob",
+            "mediatype": "web",
+            "datatype": "rss",
+            "feed": {
+                "docdate_layout": "Mon, 02 Jan 2006 15:04:05 MST",
+                "url": "https://www.nrk.no/norge/toppsaker.rss"
+            }
+        }
+    ]
+}
