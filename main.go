@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/mikkelstb/feedfetcher/config"
@@ -21,12 +20,15 @@ func init() {
 
 func main() {
 
+	flag.Parse()
+
 	for {
-		fmt.Printf("Running feedfetcher @ %s", time.Now().Format("2006-01-02 15:04"))
+		fmt.Printf("running feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
 		run()
 		if !loop {
 			break
 		}
+		fmt.Printf("finished feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
 		time.Sleep(2 * time.Hour)
 	}
 }
@@ -80,8 +82,7 @@ func run() {
 				fmt.Println(err)
 			}
 		}
-		fmt.Println("The following files were added:")
-		fmt.Print(strings.Join(filenames, ", "))
+		fmt.Printf("Number of files added: %v\n", len(newsitems))
 	}
 }
 
