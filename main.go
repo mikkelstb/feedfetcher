@@ -28,7 +28,8 @@ func main() {
 	flag.Parse()
 
 	// Read configfile
-	cfg, err := config.Read(config_file)
+	var err error
+	cfg, err = config.Read(config_file)
 	if err != nil {
 		panic(err)
 	}
