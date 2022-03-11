@@ -1,4 +1,4 @@
 config.json
 resources/
 .DS_Store
-feed_fetcher
+feedfetcher
