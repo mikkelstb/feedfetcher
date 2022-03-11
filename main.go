@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/mikkelstb/feedfetcher/config"
@@ -11,6 +13,9 @@ import (
 )
 
 var config_file string
+var infologger *log.Logger
+var cfg *config.Config
+
 var loop bool
 
 func init() {
@@ -22,35 +27,43 @@ func main() {
 
 	flag.Parse()
 
-	for {
-		fmt.Printf("running feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
-		run()
-		if !loop {
-			break
-		}
-		fmt.Printf("finished feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
-		time.Sleep(2 * time.Hour)
-	}
-}
-
-func run() {
-
 	// Read configfile
 	cfg, err := config.Read(config_file)
 	if err != nil {
 		panic(err)
 	}
 
+	// Set up logfile
+	logfile, err := os.OpenFile(cfg.Logfile_path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	infologger = log.New(logfile, "", log.Ldate|log.Ltime|log.Lshortfile)
+
+	for {
+		infologger.Printf("running feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
+		run()
+		if !loop {
+			break
+		}
+		infologger.Printf("finished feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
+		time.Sleep(2 * time.Hour)
+	}
+}
+
+func run() {
+
 	// Init Archive directive
 	archive, err := NewArchive(cfg.Archive_path)
 	if err != nil {
-		panic(err)
+		infologger.Panic(err)
 	}
 
 	// Load database
 	db, err := setupDB(cfg.DB_file_path)
 	if err != nil {
-		panic(err)
+		infologger.Panic(err)
 	}
 	defer db.Close()
 
@@ -63,7 +76,7 @@ func run() {
 
 		err := source.Process()
 		if err != nil {
-			fmt.Println(err)
+			infologger.Println(err)
 			continue
 		}
 
@@ -72,17 +85,17 @@ func run() {
 		for i := range newsitems {
 			filename, err := archive.writeNewsItemAsJson(newsitems[i])
 			if err != nil {
-				fmt.Println(err)
+				infologger.Println(err)
 			} else {
 				filenames = append(filenames, filename)
 			}
 
 			err = db.InsertNewsItem(newsitems[i])
 			if err != nil {
-				fmt.Println(err)
+				infologger.Println(err)
 			}
 		}
-		fmt.Printf("Number of files added: %v\n", len(newsitems))
+		fmt.Printf("Number of files added: %v\n", len(filenames))
 	}
 }
 

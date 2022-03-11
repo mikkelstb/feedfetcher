@@ -8,6 +8,7 @@ import (
 type Config struct {
 	Archive_path string         `json:"archive_path"`
 	DB_file_path string         `json:"db_file_path"`
+	Logfile_path string         `json:"logfile_path"`
 	Sources      []SourceConfig `json:"sources"`
 }
 
