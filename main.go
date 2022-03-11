@@ -31,7 +31,9 @@ func main() {
 	var err error
 	cfg, err = config.Read(config_file)
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		fmt.Println("error: config file not read, aborting")
+		os.Exit(1)
 	}
 
 	// Set up logfile

@@ -18,8 +18,6 @@ func NewArchive(path string) (*Archive, error) {
 	var archive Archive
 	archive.path = path
 
-	fmt.Println("Hello World. Initializing Archive")
-
 	filepath, err := os.Stat(archive.path)
 	if err != nil {
 		return nil, err
