@@ -17,10 +17,6 @@ func NewSQLiteRepository(db *sql.DB) *SQLiteRepository {
 	}
 }
 
-func (r *SQLiteRepository) String() string {
-	return "Hello!"
-}
-
 func (r *SQLiteRepository) InsertNewsItem(a feed.NewsItem) error {
 	_, err := r.db.Exec("INSERT INTO newsitem (docdate, id, source, headline, story, url) values(?,?,?,?,?,?)", a.Docdate.UTC().Format("200601021504"), a.Id(), a.FeedId, a.Headline, a.Story, a.Url)
 	if err != nil {
