@@ -1,6 +1,18 @@
 {
     "archive_path": "./archive",
     "db_file_path":"./feed_fetcher.db",
+    "repositories":[
+        {
+            "type":"sqlite3",
+            "address": "/home/mikkel/feedfetcher/ff.db",
+            "active":true
+        },
+        {
+            "type":"jsonfilefolder",
+            "address":"./home/mikkel/feedfetcher/json_repository",
+            "active":true
+        }
+    ],
     "sources": [
         {
             "name": "no_nrk_innenriks",

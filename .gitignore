@@ -1,4 +1,5 @@
 config.json
-resources/
 .DS_Store
 feedfetcher
+resources/
+archive/
