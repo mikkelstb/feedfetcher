@@ -7,15 +7,15 @@ import (
 	"os"
 	"time"
 
-	"github.com/mikkelstb/feedfetcher/archive"
 	"github.com/mikkelstb/feedfetcher/config"
 	"github.com/mikkelstb/feedfetcher/feed"
+	"github.com/mikkelstb/feedfetcher/repository"
 )
 
 var config_file string
 var infologger *log.Logger
 var cfg *config.Config
-var repositories []archive.Archive
+var repositories []repository.Archive
 
 var loop bool
 
@@ -49,7 +49,7 @@ func main() {
 
 	for _, rep := range cfg.Repositories {
 		var err error
-		var r archive.Archive
+		var r repository.Archive
 
 		if !rep.Active {
 			continue
@@ -57,10 +57,10 @@ func main() {
 
 		switch rep.Type {
 		case "sqlite3":
-			r, err = archive.NewSQLite(rep.Address)
+			r, err = repository.NewSQLite(rep.Address)
 			repositories = append(repositories, r)
 		case "jsonfilefolder":
-			r, err = archive.NewJsonFileFolder(rep.Address)
+			r, err = repository.NewJsonFileFolder(rep.Address)
 			repositories = append(repositories, r)
 		}
 		if err != nil {
