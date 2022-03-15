@@ -1,13 +1,13 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"time"
 
+	"github.com/mikkelstb/feedfetcher/archive"
 	"github.com/mikkelstb/feedfetcher/config"
 	"github.com/mikkelstb/feedfetcher/feed"
 )
@@ -15,6 +15,7 @@ import (
 var config_file string
 var infologger *log.Logger
 var cfg *config.Config
+var repositories []archive.Archive
 
 var loop bool
 
@@ -44,6 +45,29 @@ func main() {
 
 	infologger = log.New(logfile, "", log.Ldate|log.Ltime|log.Lshortfile)
 
+	//Set up repositories
+
+	for _, rep := range cfg.Repositories {
+		var err error
+		var r archive.Archive
+
+		if !rep.Active {
+			continue
+		}
+
+		switch rep.Type {
+		case "sqlite3":
+			r, err = archive.NewSQLite(rep.Address)
+			repositories = append(repositories, r)
+		case "jsonfilefolder":
+			r, err = archive.NewJsonFileFolder(rep.Address)
+			repositories = append(repositories, r)
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	for {
 		infologger.Printf("running feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
 		run()
@@ -57,25 +81,10 @@ func main() {
 
 func run() {
 
-	// Init Archive directive
-	archive, err := NewArchive(cfg.Archive_path)
-	if err != nil {
-		infologger.Panic(err)
-	}
-
-	// Load database
-	db, err := setupDB(cfg.DB_file_path)
-	if err != nil {
-		infologger.Panic(err)
-	}
-	defer db.Close()
-
 	sources := getSources(cfg.Sources)
 
 	// Loop through feeds in config
 	for _, source := range sources {
-
-		var filenames []string
 
 		err := source.Process()
 		if err != nil {
@@ -86,19 +95,16 @@ func run() {
 		newsitems := source.GetNewsitems()
 
 		for i := range newsitems {
-			filename, err := archive.writeNewsItemAsJson(newsitems[i])
-			if err != nil {
-				infologger.Println(err)
-			} else {
-				filenames = append(filenames, filename)
-			}
+			for rep := range repositories {
+				result, err := repositories[rep].WriteSingle(newsitems[i])
 
-			err = db.InsertNewsItem(newsitems[i])
-			if err != nil {
-				infologger.Println(err)
+				if err != nil {
+					infologger.Println(err.Error())
+				} else {
+					infologger.Printf("added %v\n", result)
+				}
 			}
 		}
-		fmt.Printf("Number of files added: %v\n", len(filenames))
 	}
 }
 
@@ -113,14 +119,4 @@ func getSources(conf []config.SourceConfig) []*feed.Source {
 		sources = append(sources, feed.NewSource(source_cfg))
 	}
 	return sources
-}
-
-func setupDB(filename string) (*SQLiteRepository, error) {
-
-	db_config, err := sql.Open("sqlite3", filename)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewSQLiteRepository(db_config), nil
 }
