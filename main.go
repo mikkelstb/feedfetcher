@@ -43,7 +43,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	infologger = log.New(logfile, "", log.Ldate|log.Ltime|log.Lshortfile)
+	infologger = log.New(logfile, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	//Set up repositories
 
