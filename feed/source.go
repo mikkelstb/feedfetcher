@@ -13,6 +13,10 @@ type Source struct {
 	feed   Feed
 }
 
+func (s Source) Name() string {
+	return s.config.Name
+}
+
 func NewSource(cfg config.SourceConfig) *Source {
 	s := Source{config: cfg}
 	s.feed = &RSSFeed{}

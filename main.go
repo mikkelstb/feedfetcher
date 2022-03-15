@@ -69,12 +69,13 @@ func main() {
 	}
 
 	for {
-		infologger.Printf("running feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
+		infologger.Printf("running feedfetcher\n")
 		run()
+		infologger.Printf("finished feedfetcher\n")
 		if !loop {
 			break
 		}
-		infologger.Printf("finished feedfetcher @ %s\n", time.Now().Format("2006-01-02 15:04"))
+		infologger.Printf("Sleeping for 2 hours\n")
 		time.Sleep(2 * time.Hour)
 	}
 }
@@ -86,6 +87,8 @@ func run() {
 	// Loop through feeds in config
 	for _, source := range sources {
 
+		infologger.Printf("starting on source: %s", source.Name())
+
 		err := source.Process()
 		if err != nil {
 			infologger.Println(err)
@@ -93,17 +96,21 @@ func run() {
 		}
 
 		newsitems := source.GetNewsitems()
+		infologger.Printf("Found %d articles", len(newsitems))
+		report := make(map[string]int, len(repositories))
 
 		for i := range newsitems {
 			for rep := range repositories {
-				result, err := repositories[rep].WriteSingle(newsitems[i])
-
+				_, err := repositories[rep].WriteSingle(newsitems[i])
 				if err != nil {
 					infologger.Println(err.Error())
 				} else {
-					infologger.Printf("added %v\n", result)
+					report[repositories[rep].String()]++
 				}
 			}
+		}
+		for rep, art := range report {
+			infologger.Printf("Added %d articles to %s\n", art, rep)
 		}
 	}
 }

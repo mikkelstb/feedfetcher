@@ -1,15 +1,17 @@
 {
-    "archive_path": "./archive",
+    "archive_path":"./resources",
     "db_file_path":"./feed_fetcher.db",
+    "logfile_path":"./resources/ff.log",
+
     "repositories":[
         {
             "type":"sqlite3",
             "address": "/home/mikkel/feedfetcher/ff.db",
-            "active":true
+            "active":false
         },
         {
             "type":"jsonfilefolder",
-            "address":"./home/mikkel/feedfetcher/json_repository",
+            "address":"./resources/",
             "active":true
         }
     ],
