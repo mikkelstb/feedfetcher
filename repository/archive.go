@@ -1,4 +1,4 @@
-package archive
+package repository
 
 import "github.com/mikkelstb/feedfetcher/feed"
 
