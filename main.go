@@ -71,7 +71,7 @@ func main() {
 	for {
 		infologger.Printf("running feedfetcher\n")
 		run()
-		infologger.Printf("finished feedfetcher\n")
+		infologger.Printf("finished feedfetcher\n\n")
 		if !loop {
 			break
 		}
@@ -96,21 +96,25 @@ func run() {
 		}
 
 		newsitems := source.GetNewsitems()
-		infologger.Printf("Found %d articles", len(newsitems))
+		infologger.Printf("found %d articles", len(newsitems))
 		report := make(map[string]int, len(repositories))
 
-		for i := range newsitems {
-			for rep := range repositories {
-				_, err := repositories[rep].WriteSingle(newsitems[i])
+		for rep := range repositories {
+
+			infologger.Printf("writing to %s\n", repositories[rep].String())
+
+			for ni := range newsitems {
+				_, err := repositories[rep].WriteSingle(newsitems[ni])
 				if err != nil {
-					infologger.Println(err.Error())
+					report[err.Error()]++
 				} else {
-					report[repositories[rep].String()]++
+					report["added files"]++
 				}
 			}
-		}
-		for rep, art := range report {
-			infologger.Printf("Added %d articles to %s\n", art, rep)
+
+			for status, freq := range report {
+				infologger.Printf("%s: %d\n", status, freq)
+			}
 		}
 	}
 }

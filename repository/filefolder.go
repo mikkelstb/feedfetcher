@@ -43,8 +43,9 @@ func (jsff JsonFileFolder) WriteSingle(ni feed.NewsItem) (string, error) {
 
 	// Check if file exist
 	// If so ignore writing
-	if _, err := os.Stat(filepath.Join(folder_path, filename)); err == nil {
-		return "", fmt.Errorf("skipping file %v, file already exists", filename)
+	_, err := os.Stat(filepath.Join(folder_path, filename))
+	if err == nil {
+		return "", fmt.Errorf("file already exists")
 	}
 
 	//Convert NewsItem to NewsItemXML
