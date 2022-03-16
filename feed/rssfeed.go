@@ -2,7 +2,6 @@ package feed
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"html"
 	"io"
@@ -100,7 +99,7 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 	feed.Items = feed.Items[0 : len(feed.Items)-1]
 
 	if len(n.Story) < 16 {
-		return nil, errors.New("story text too small")
+		return nil, fmt.Errorf("%s: story text too small", n.Headline)
 	}
 
 	return n, nil

@@ -39,14 +39,16 @@ func (s *Source) Process() error {
 	return nil
 }
 
-func (f *Source) GetNewsitems() []NewsItem {
+func (f *Source) GetNewsitems() ([]NewsItem, []error) {
 
 	var articles []NewsItem
+	var errs []error
+
 	for f.feed.HasNext() {
 
 		article, err := f.feed.GetNext()
 		if err != nil {
-			fmt.Println(err.Error())
+			errs = append(errs, err)
 			continue
 		}
 
@@ -59,11 +61,11 @@ func (f *Source) GetNewsitems() []NewsItem {
 		article.Docdate, err = time.Parse(f.config.Feed["docdate_layout"], article.Docdatestring)
 
 		if err != nil {
-			fmt.Println(err)
+			errs = append(errs, fmt.Errorf("%s: %s", article.Id(), err))
 			continue
 		}
 
 		articles = append(articles, *article)
 	}
-	return articles
+	return articles, errs
 }

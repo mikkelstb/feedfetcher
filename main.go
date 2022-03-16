@@ -95,7 +95,13 @@ func run() {
 			continue
 		}
 
-		newsitems := source.GetNewsitems()
+		newsitems, errs := source.GetNewsitems()
+		if len(errs) > 0 {
+			for e := range errs {
+				infologger.Println(errs[e])
+			}
+		}
+
 		infologger.Printf("found %d articles", len(newsitems))
 		report := make(map[string]int, len(repositories))
 
