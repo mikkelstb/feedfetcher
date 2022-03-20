@@ -1,6 +1,7 @@
 package feed
 
 import (
+	"context"
 	"encoding/xml"
 	"fmt"
 	"html"
@@ -39,7 +40,16 @@ type RSSFeed struct {
 }
 
 func (feed *RSSFeed) Read() error {
-	response, err := http.Get(feed.url)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, feed.url, nil)
+	if err != nil {
+		return err
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
 	if err != nil {
 		return err
 	}
