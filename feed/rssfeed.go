@@ -92,8 +92,12 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 
 	n.Local_id = nextitem.LocalID
 	n.Url = nextitem.Url
-	n.Docdatestring = nextitem.Docdate
-	n.FetchTime = feed.fetch_time
+	dd, err := time.Parse(feed.docdate_layout, nextitem.Docdate)
+	if err != nil {
+		return nil, err
+	}
+	n.Docdate = dd.UTC().Format(time.RFC3339)
+	n.FetchTime = feed.fetch_time.UTC().Format(time.RFC3339)
 
 	// Slice off current item
 	feed.Items = feed.Items[0 : len(feed.Items)-1]

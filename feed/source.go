@@ -1,10 +1,6 @@
 package feed
 
 import (
-	"fmt"
-
-	"time"
-
 	"github.com/mikkelstb/feedfetcher/config"
 )
 
@@ -58,12 +54,6 @@ func (f *Source) GetNewsitems() ([]NewsItem, []error) {
 		article.Mediatype = f.config.Mediatype
 		article.Country = f.config.Country
 		article.Language = f.config.Language
-		article.Docdate, err = time.Parse(f.config.Feed["docdate_layout"], article.Docdatestring)
-
-		if err != nil {
-			errs = append(errs, fmt.Errorf("%s: %s", article.Id(), err))
-			continue
-		}
 
 		articles = append(articles, *article)
 	}
