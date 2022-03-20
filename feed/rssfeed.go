@@ -95,6 +95,10 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 	}
 
 	nextitem := feed.Items[len(feed.Items)-1]
+
+	// Slice off current item
+	feed.Items = feed.Items[0 : len(feed.Items)-1]
+
 	n := new(NewsItem)
 
 	n.Headline = feed.sanitize(nextitem.Headline)
@@ -108,9 +112,6 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 	}
 	n.Docdate = dd.UTC().Format(time.RFC3339)
 	n.FetchTime = feed.fetch_time.UTC().Format(time.RFC3339)
-
-	// Slice off current item
-	feed.Items = feed.Items[0 : len(feed.Items)-1]
 
 	if len(n.Story) < 16 {
 		return nil, fmt.Errorf("%s: story text too small", n.Headline)
