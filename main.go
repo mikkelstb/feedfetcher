@@ -96,13 +96,19 @@ func run() {
 		}
 
 		newsitems, errs := source.GetNewsitems()
+		infologger.Printf("Found %d articles\n", len(newsitems))
+
 		if len(errs) > 0 {
+			infologger.Printf("Discarded %d articles:\n", len(errs))
+			var errormap map[string]int = map[string]int{}
 			for e := range errs {
-				infologger.Println(errs[e])
+				errormap[errs[e].Error()]++
+			}
+			for mes, count := range errormap {
+				infologger.Printf("%v: %d", mes, count)
 			}
 		}
 
-		infologger.Printf("found %d articles", len(newsitems))
 		report := make(map[string]int, len(repositories))
 
 		for rep := range repositories {

@@ -114,7 +114,7 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 	n.FetchTime = feed.fetch_time.UTC().Format(time.RFC3339)
 
 	if len(n.Story) < 16 {
-		return nil, fmt.Errorf("%s: story text too small", n.Headline)
+		return nil, fmt.Errorf("story text too small")
 	}
 
 	return n, nil

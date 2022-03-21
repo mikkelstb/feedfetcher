@@ -42,7 +42,7 @@ func NewJsonFileFolder(path string) (*JsonFileFolder, error) {
 
 func (jsff JsonFileFolder) WriteSingle(ni feed.NewsItem) (string, error) {
 
-	filename := fmt.Sprintf("%03d_%v_%v.json", ni.FeedId, ni.GetDocdate().Format("0601021504"), ni.Id())
+	filename := fmt.Sprintf("%03d_%v_%v.json", ni.FeedId, ni.GetDocdate().Format("0601021504"), ni.GetId())
 	folder_path := filepath.Join(jsff.path, ni.Feed, ni.GetDocdate().Format("2006/01"))
 
 	// Check if folder exists
@@ -56,7 +56,7 @@ func (jsff JsonFileFolder) WriteSingle(ni feed.NewsItem) (string, error) {
 		return "", fmt.Errorf("file already exists")
 	}
 
-	//Convert NewsItem to NewsItemXML
+	//Convert NewsItem to Json
 	json_data, err := ni.ToJson()
 	if err != nil {
 		return "", err

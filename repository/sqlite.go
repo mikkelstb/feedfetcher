@@ -28,7 +28,7 @@ func (r *SQLite) String() string {
 }
 
 func (r *SQLite) WriteSingle(a feed.NewsItem) (string, error) {
-	_, err := r.db.Exec("INSERT INTO newsitem (docdate, id, source, headline, story, url) values(?,?,?,?,?,?)", a.Docdate, a.Id(), a.FeedId, a.Headline, a.Story, a.Url)
+	_, err := r.db.Exec("INSERT INTO newsitem (docdate, id, source, headline, story, url) values(?,?,?,?,?,?)", a.Docdate, a.GetId(), a.FeedId, a.Headline, a.Story, a.Url)
 	if err != nil {
 		return "", err
 	}
