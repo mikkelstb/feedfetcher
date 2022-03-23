@@ -34,7 +34,7 @@ type NewsItem struct {
 func (ni NewsItem) GetId() string {
 	id := md5.New()
 	io.WriteString(id, strings.Join([]string{ni.Headline, ni.Story}, ""))
-	return fmt.Sprintf("%02d%v%v", ni.FeedId, ni.GetDocdate().Format("060102"), hex.EncodeToString(id.Sum(nil))[0:4])
+	return fmt.Sprintf("%02d%v%v", ni.FeedId, ni.GetDocdate().Format("0601021504"), hex.EncodeToString(id.Sum(nil))[0:4])
 }
 
 func (ni NewsItem) GetDocdate() time.Time {
