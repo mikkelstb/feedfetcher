@@ -3,4 +3,3 @@ config.json
 feedfetcher
 resources/
 cmd/
-search/
