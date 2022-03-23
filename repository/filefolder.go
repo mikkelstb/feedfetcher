@@ -45,7 +45,7 @@ func NewJsonFileFolder(path string) (*JsonFileFolder, error) {
 func (jsff JsonFileFolder) WriteSingle(ni feed.NewsItem) (string, error) {
 
 	filename := fmt.Sprintf("%s.json", ni.GetId())
-	folder_path := filepath.Join(jsff.path, ni.Feed, ni.GetDocdate().Format("200601"))
+	folder_path := filepath.Join(jsff.path, fmt.Sprintf("%02d", ni.FeedId), ni.GetDocdate().Format("200601"))
 
 	// Check if folder exists
 	// If not: try create
