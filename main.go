@@ -112,9 +112,11 @@ func run() {
 			}
 		}
 
+		var report map[string]int
+
 		for rep := range repositories {
 
-			report := make(map[string]int, 0)
+			report = make(map[string]int, 0)
 
 			infologger.Printf("writing to %s\n", repositories[rep].String())
 
