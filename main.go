@@ -28,6 +28,9 @@ func main() {
 
 	flag.Parse()
 
+	fmt.Println("This is Feedfetcher")
+	fmt.Printf("using configfile: %s\n", config_file)
+
 	// Read configfile
 	var err error
 	cfg, err = config.Read(config_file)

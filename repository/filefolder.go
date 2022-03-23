@@ -7,12 +7,14 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/mikkelstb/feedfetcher/feed"
 )
 
-//var month_pattern regexp.Regexp = *regexp.MustCompile(`(^[0][1-9]||[1][012]$)`)
-//var year_pattern regexp.Regexp = *regexp.MustCompile(`^2\d{3}$`)
+var month_pattern regexp.Regexp = *regexp.MustCompile(`(^[0][1-9]||[1][012]$)`)
+var year_pattern regexp.Regexp = *regexp.MustCompile(`^2\d{3}$`)
+var year_month_pattern regexp.Regexp = *regexp.MustCompile(`(^2\d{3}([0][1-9])||([1][012])$)`)
 
 type JsonFileFolder struct {
 	path string
@@ -42,8 +44,8 @@ func NewJsonFileFolder(path string) (*JsonFileFolder, error) {
 
 func (jsff JsonFileFolder) WriteSingle(ni feed.NewsItem) (string, error) {
 
-	filename := fmt.Sprintf("%03d_%v_%v.json", ni.FeedId, ni.GetDocdate().Format("0601021504"), ni.GetId())
-	folder_path := filepath.Join(jsff.path, ni.Feed, ni.GetDocdate().Format("2006/01"))
+	filename := fmt.Sprintf("%s.json", ni.GetId())
+	folder_path := filepath.Join(jsff.path, ni.Feed, ni.GetDocdate().Format("200601"))
 
 	// Check if folder exists
 	// If not: try create
@@ -104,7 +106,7 @@ func (jsff JsonFileFolder) GetSources() []string {
 func (jsff JsonFileFolder) GetNewsItem(filename string) (*feed.NewsItem, error) {
 	ni := new(feed.NewsItem)
 
-	json_file, err := os.ReadFile(filename)
+	json_file, err := os.ReadFile(filepath.Join(jsff.path, filename))
 	if err != nil {
 		return nil, err
 	}
@@ -114,18 +116,34 @@ func (jsff JsonFileFolder) GetNewsItem(filename string) (*feed.NewsItem, error) 
 	return ni, nil
 }
 
-// func (jsff JsonFileFolder) listAllFiles(source, year, month string) []string {
+func (jsff JsonFileFolder) getMonths(source string) []string {
+	years, err := os.ReadDir(filepath.Join(jsff.path, source))
+	if err != nil {
+		fmt.Println(err)
+	}
+	var result []string
+	for y := range years {
+		if year_month_pattern.Match([]byte(years[y].Name())) && years[y].IsDir() {
+			result = append(result, years[y].Name())
+		}
+	}
+	return result
+}
 
-// 	var files []string
+func (jsff JsonFileFolder) ListAllFiles(source string) []string {
 
-// 	fs.WalkDir(jsff.root, filepath.Join(source, year, month), func(path string, d fs.DirEntry, err error) error {
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		if !d.IsDir() {
-// 			files = append(files, path)
-// 		}
-// 		return nil
-// 	})
-// 	return files
-// }
+	var files []string
+	for _, month := range jsff.getMonths(source) {
+
+		fs.WalkDir(jsff.root, filepath.Join(source, month), func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			if !d.IsDir() {
+				files = append(files, path)
+			}
+			return nil
+		})
+	}
+	return files
+}
