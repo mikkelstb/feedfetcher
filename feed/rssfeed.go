@@ -103,8 +103,6 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 
 	n.Headline = feed.sanitize(nextitem.Headline)
 	n.Story = feed.sanitize(nextitem.Story)
-
-	n.Local_id = nextitem.LocalID
 	n.Url = nextitem.Url
 	dd, err := time.Parse(feed.docdate_layout, nextitem.Docdate)
 	if err != nil {

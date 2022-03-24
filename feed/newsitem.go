@@ -18,7 +18,6 @@ type NewsItem struct {
 	Mediatype string `json:"mediatype"`
 	Headline  string `json:"headline"`
 	Story     string `json:"story"`
-	Local_id  string `json:"localId"`
 	Url       string `json:"url"`
 	Language  string `json:"language"`
 	Country   string `json:"country"`
