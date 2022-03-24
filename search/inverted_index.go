@@ -17,7 +17,6 @@ import (
 */
 
 type InvertedIndex struct {
-	language   string
 	terms      map[string][]string
 	textreader strings.Reader
 	docscanner bufio.Scanner
@@ -32,7 +31,7 @@ func NewInvertedIndex() *InvertedIndex {
 	return &ii
 }
 
-func (ii *InvertedIndex) AddDocument(doc feed.NewsItem) {
+func (ii *InvertedIndex) AddDocument(doc *feed.NewsItem) {
 
 	text := doc.Headline + " " + doc.Story
 	text = strings.ToLower(text)
