@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 	"time"
 )
 
@@ -32,7 +31,7 @@ type NewsItem struct {
 
 func (ni NewsItem) GetId() string {
 	id := md5.New()
-	io.WriteString(id, strings.Join([]string{ni.Headline, ni.Story}, ""))
+	io.WriteString(id, ni.Headline)
 	return fmt.Sprintf("%02d%v%v", ni.FeedId, ni.GetDocdate().Format("0601021504"), hex.EncodeToString(id.Sum(nil))[0:4])
 }
 
