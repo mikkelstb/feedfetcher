@@ -136,6 +136,10 @@ func run() {
 	}
 }
 
+func readConfig() {
+	
+}
+
 func getSources(conf []config.SourceConfig) []*feed.Source {
 
 	var sources []*feed.Source
