@@ -74,7 +74,9 @@ func main() {
 
 	for {
 		infologger.Printf("running feedfetcher\n")
+		infologger.Println("updating feeds")
 		updateFeeds()
+		infologger.Println("deleting old articles")
 		deleteOldArticles()
 		infologger.Printf("finished feedfetcher\n\n")
 		if !loop {
@@ -87,7 +89,12 @@ func main() {
 
 func deleteOldArticles() {
 	for rep := range repositories {
-		repositories[rep].EraseOldArticles()
+		articles, err := repositories[rep].EraseOldArticles()
+		if err != nil {
+			infologger.Println(err.Error())
+		} else {
+			infologger.Printf("deletes %d articles\n", articles)
+		}
 	}
 }
 
