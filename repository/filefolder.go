@@ -2,6 +2,7 @@ package repository
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
@@ -17,8 +18,9 @@ var year_pattern regexp.Regexp = *regexp.MustCompile(`^2\d{3}$`)
 var year_month_pattern regexp.Regexp = *regexp.MustCompile(`(^2\d{3}([0][1-9])||([1][012])$)`)
 
 type JsonFileFolder struct {
-	path string
-	root fs.FS
+	path     string
+	root     fs.FS
+	max_days int
 }
 
 func (jsff *JsonFileFolder) String() string {
@@ -146,4 +148,8 @@ func (jsff JsonFileFolder) ListAllFiles(source string) []string {
 		})
 	}
 	return files
+}
+
+func (jsff JsonFileFolder) EraseOldArticles() (int, error) {
+	return 0, errors.New("Not implemented yet")
 }

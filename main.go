@@ -30,6 +30,7 @@ func main() {
 
 	fmt.Println("This is Feedfetcher")
 	fmt.Printf("using configfile: %s\n", config_file)
+	fmt.Printf("using loop: %v\n", loop)
 
 	// Read configfile
 	var err error
@@ -60,7 +61,7 @@ func main() {
 
 		switch rep.Type {
 		case "sqlite3":
-			r, err = repository.NewSQLite(rep.Address)
+			r, err = repository.NewSQLite(rep.Address, 14)
 			repositories = append(repositories, r)
 		case "jsonfilefolder":
 			r, err = repository.NewJsonFileFolder(rep.Address)
@@ -73,7 +74,8 @@ func main() {
 
 	for {
 		infologger.Printf("running feedfetcher\n")
-		run()
+		updateFeeds()
+		deleteOldArticles()
 		infologger.Printf("finished feedfetcher\n\n")
 		if !loop {
 			break
@@ -83,7 +85,13 @@ func main() {
 	}
 }
 
-func run() {
+func deleteOldArticles() {
+	for rep := range repositories {
+		repositories[rep].EraseOldArticles()
+	}
+}
+
+func updateFeeds() {
 
 	sources := getSources(cfg.Sources)
 
@@ -134,10 +142,6 @@ func run() {
 			}
 		}
 	}
-}
-
-func readConfig() {
-	
 }
 
 func getSources(conf []config.SourceConfig) []*feed.Source {

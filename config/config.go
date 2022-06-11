@@ -25,9 +25,10 @@ type SourceConfig struct {
 }
 
 type RepositoryConfig struct {
-	Type    string `json:"type"`
-	Address string `json:"address"`
-	Active  bool   `json:"active"`
+	Type           string `json:"type"`
+	Address        string `json:"address"`
+	Active         bool   `json:"active"`
+	EraseAfterDays int    `json:"erase_after_days"`
 }
 
 func Read(filename string) (*Config, error) {
