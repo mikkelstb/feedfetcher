@@ -27,17 +27,40 @@ type RSSFeed struct {
 	Items []struct {
 		Headline string `xml:"title"`
 		Story    string `xml:"description"`
-		LocalID  string `xml:"guid"`
+		LocalId  string `xml:"guid"`
 		Url      string `xml:"link"`
 		Docdate  string `xml:"pubDate"`
 	} `xml:"channel>item"`
 
-	html_cleaner bluemonday.Policy
-	newlines     regexp.Regexp
-	spaces       regexp.Regexp
-	startbracket regexp.Regexp
-	endword      regexp.Regexp
+	html_cleaner   bluemonday.Policy
+	newlinepattern regexp.Regexp
+	spaces         regexp.Regexp
+	startbracket   regexp.Regexp
+	endword        regexp.Regexp
 }
+
+/*
+	feed.Init sets up regexpes and configuration
+*/
+
+func (feed *RSSFeed) Init(config map[string]string) {
+
+	feed.html_cleaner = *bluemonday.StrictPolicy()
+	feed.newlinepattern = *regexp.MustCompile(`\n+`)
+	feed.spaces = *regexp.MustCompile(`\s{2,}`)
+	feed.startbracket = *regexp.MustCompile(`\[.+?\]`)
+	feed.endword = *regexp.MustCompile(`\w+…$`)
+
+	feed.url = config["url"]
+	feed.docdate_layout = config["docdate_layout"]
+	feed.fetch_time = time.Now()
+}
+
+/*
+	Connects to http server defined by url
+	Function returns an error if either connection or reading of data fails
+	On success the response will be stored into feed.rss_data
+*/
 
 func (feed *RSSFeed) Read() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -66,18 +89,9 @@ func (feed *RSSFeed) Read() error {
 	return nil
 }
 
-func (feed *RSSFeed) Init(config map[string]string) {
-
-	feed.html_cleaner = *bluemonday.StrictPolicy()
-	feed.newlines = *regexp.MustCompile(`\n+`)
-	feed.spaces = *regexp.MustCompile(`\s{2,}`)
-	feed.startbracket = *regexp.MustCompile(`\[.+?\]`)
-	feed.endword = *regexp.MustCompile(`\w+…$`)
-
-	feed.url = config["url"]
-	feed.docdate_layout = config["docdate_layout"]
-	feed.fetch_time = time.Now()
-}
+/*
+	Parse reads the rss_data, and uses xml.Unmarshal to set itself up
+*/
 
 func (feed *RSSFeed) Parse() error {
 	err := xml.Unmarshal(feed.rss_data, feed)
@@ -87,6 +101,13 @@ func (feed *RSSFeed) Parse() error {
 func (feed *RSSFeed) HasNext() bool {
 	return len(feed.Items) != 0
 }
+
+/*
+	GetNext returns the first newsitem in the Rssfeed
+	It runs sanitize on headline and story, inserts fetchtime from feed
+	If storytext is smaller than 16 bytes returns nil with errormessage
+	Rerurns nil, error if feed.Items is empty
+*/
 
 func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 
@@ -104,6 +125,8 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 	n.Headline = feed.sanitize(nextitem.Headline)
 	n.Story = feed.sanitize(nextitem.Story)
 	n.Url = nextitem.Url
+	n.localId = nextitem.LocalId
+
 	dd, err := time.Parse(feed.docdate_layout, nextitem.Docdate)
 	if err != nil {
 		return nil, err
@@ -118,15 +141,19 @@ func (feed *RSSFeed) GetNext() (*NewsItem, error) {
 	return n, nil
 }
 
+/*
+	private function to clean up most unnessesary symbols and html tags
+*/
+
 func (feed *RSSFeed) sanitize(field string) string {
-	clean_field := feed.newlines.ReplaceAllString(field, " ")
+	clean_field := feed.newlinepattern.ReplaceAllString(field, " ")
 	clean_field = feed.html_cleaner.Sanitize(clean_field)
 	clean_field = html.UnescapeString(clean_field)
 	clean_field = feed.startbracket.ReplaceAllString(clean_field, "")
 	clean_field = feed.endword.ReplaceAllString(clean_field, "")
 	clean_field = feed.spaces.ReplaceAllString(clean_field, " ")
 
-	clean_field = strings.Trim(clean_field, " :,-")
+	clean_field = strings.Trim(clean_field, " :,-.")
 
 	return clean_field
 }
