@@ -23,7 +23,7 @@ type NewsItem struct {
 	Docdate   string `json:"docdate"`
 	FetchTime string `json:"fetchTime"`
 	Id        string `json:"id"`
-	localId   string `json:localId`
+	LocalId   string `json:localId`
 }
 
 /*
@@ -33,8 +33,8 @@ type NewsItem struct {
 func (ni NewsItem) GetId() string {
 	id := md5.New()
 
-	if len(ni.localId) > 0 {
-		io.WriteString(id, ni.localId)
+	if len(ni.LocalId) > 0 {
+		io.WriteString(id, ni.LocalId)
 	} else {
 		io.WriteString(id, ni.Headline)
 	}
